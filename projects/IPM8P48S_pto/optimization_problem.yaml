@@ -1,0 +1,28 @@
+case_names:
+  - transient
+
+objectives:
+  - function_name: torque_ripple_percentage
+    kwargs:
+      torque_scale: 8.0
+
+ineq_constraints:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 8.0
+    coefficient: -1
+    baseline: 14.62
+
+eq_constraints:
+  - function_name: num_connected_components
+    kwargs:
+      physical_tag: 20
+    baseline: 1
+
+other_metrics:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 8.0
+  - function_name: torque_ripple_percentage
+    kwargs:
+      torque_scale: 8.0

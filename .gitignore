@@ -1,0 +1,22 @@
+# include temporary files
+__pycache__
+projects/*
+/*.png
+
+# exclude example projects
+!projects/soo_base
+!projects/moo_base
+!projects/Dmodel
+!projects/Dmodel_advanced
+!projects/Dmodel_moo
+!projects/Dmodel_multi_material
+!projects/Dmodel_phase_optimization
+!projects/IPM8P48S_moo
+!projects/IPM8P48S_pto
+!projects/problem_template.yaml
+
+# include folders in project
+summary
+Mesh
+resources
+opt_progress

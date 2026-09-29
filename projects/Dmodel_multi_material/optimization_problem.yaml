@@ -1,0 +1,33 @@
+case_names:
+  - transient
+
+objectives:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0
+    normalization_const: 2.1
+    coefficient: -1.0
+  - function_name: torque_ripple_percentage
+    kwargs:
+      torque_scale: 4.0
+    normalization_const: 54.0
+    coefficient: 0.1
+
+ineq_constraints:
+  - function_name: material_area
+    kwargs:
+      physical_tag: 50000
+    baseline: 4.9975e-05
+
+eq_constraints: []
+
+other_metrics:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0
+  - function_name: torque_ripple_percentage
+    kwargs:
+      torque_scale: 4.0
+  - function_name: material_area
+    kwargs:
+      physical_tag: 50000

@@ -1,0 +1,30 @@
+# optimization dependencies
+evaluator:
+  name: sphere
+  kwargs:
+    dim: 30
+optimizer:
+  name: cmaes
+  kwargs:
+    bounds: [-5.12, 5.12]
+    seed: 42
+
+# optimization settings
+num_iteration: 100
+
+# output functionality
+output_interval: 1
+output_control:
+  best_individual:
+    filename_base: best_individual
+    enabled: True
+    output_interval: 1
+  candidate:
+    filename_base: candidate
+    enabled: False
+    output_interval: 1
+  candidate_plot:
+    filename_base: candidate_plot
+    enabled: True
+    output_interval: 10
+enable_progress_gui: True

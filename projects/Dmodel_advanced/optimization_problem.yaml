@@ -1,0 +1,53 @@
+case_names:
+  - transient
+  - transient_high_current
+
+objectives:
+  - function_name: average_torque
+    case_name: transient
+    kwargs:
+      torque_scale: 4.0
+    normalization_const: 2.1
+    coefficient: -1.0
+  - function_name: average_torque
+    case_name: transient_high_current
+    kwargs:
+      torque_scale: 4.0
+    normalization_const: 6.3
+    coefficient: -1.0
+
+ineq_constraints:
+  - function_name: torque_ripple_percentage
+    case_name: transient
+    kwargs:
+      torque_scale: 4.0
+    baseline: 30.0
+  - function_name: torque_ripple_percentage
+    case_name: transient_high_current
+    kwargs:
+      torque_scale: 4.0
+    baseline: 30.0
+
+eq_constraints:
+  - function_name: num_connected_components
+    kwargs:
+      physical_tag: 20
+    baseline: 1
+
+other_metrics:
+  - function_name: average_torque
+    case_name: transient
+    kwargs:
+      torque_scale: 4.0
+  - function_name: average_torque
+    case_name: transient_high_current
+    kwargs:
+      torque_scale: 4.0
+  - function_name: torque_ripple_percentage
+    case_name: transient
+    kwargs:
+      torque_scale: 4.0
+  - function_name: torque_ripple_percentage
+    case_name: transient_high_current
+    kwargs:
+      torque_scale: 4.0
