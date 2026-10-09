@@ -1,7 +1,7 @@
 """
 phase_conditioner.py
 The MIT License (MIT)
-Copyright © 2025 Sicence Solutions International Laboratory, Inc.
+Copyright © 2025 Science Solutions International Laboratory, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
@@ -29,7 +29,8 @@ from emsopt_engine.registry import analysis_conditioner
 
 
 class PhaseConditioner(AnalysisConditionerInterface):
-    def __init__(self, scale: float = 1):
+    def __init__(self, case_names: list[str], scale: float = 1) -> None:
+        self.case_names = case_names
         self.scale = scale
 
     def get_variable_dimension(self) -> int:
@@ -38,7 +39,7 @@ class PhaseConditioner(AnalysisConditionerInterface):
         Returns:
             int: dimension
         """
-        return 1
+        return len(self.case_names)
 
     def condition_analysis_case(self, parameters: np.ndarray, input_json: dict, case_name: str) -> dict:
         """condition analysis case by modifing input_json
@@ -52,21 +53,23 @@ class PhaseConditioner(AnalysisConditionerInterface):
             Modified input_json
         """
         modified = input_json.copy()
-        if case_name == "transient":
-            for d in modified["18_Time_Function"]:
-                if "PHASE" in d:
-                    d["PHASE"] += parameters[0] * self.scale
+        for i in range(len(self.case_names)):
+            if case_name == self.case_names[i]:
+                for d in modified["18_Time_Function"]:
+                    if "PHASE" in d:
+                        d["PHASE"] += parameters[i] * self.scale
         return modified
 
 
 @analysis_conditioner("phase_conditioner")
-def build_phase_conditioner(scale: float) -> AnalysisConditionerInterface:
+def build_phase_conditioner(case_names: list[str], scale: float = 1.0) -> AnalysisConditionerInterface:
     """Phase conditioner. Change phase according to optimization variable and scale.
 
     Args:
-        scale (float): scale of phase angle. Resultant phase angle [deg] will be: scale * parameter
+        case_names (list[str]): case names to apply phase conditioning.
+        scale (float): scale of phase angle. Resultant phase angle [deg] will be: += scale * parameter
 
     Returns:
         AnalysisConditionerInterface: _description_
     """
-    return PhaseConditioner(scale)
+    return PhaseConditioner(case_names, scale)

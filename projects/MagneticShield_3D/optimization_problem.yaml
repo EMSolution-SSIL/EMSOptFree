@@ -1,0 +1,26 @@
+case_names:
+  - static
+
+objectives:
+  - function_name: magnetic_energy
+    kwargs:
+      physical_tag: 3
+    normalization_const: 1.0e-14
+    coefficient: 0.5
+  - function_name: material_volume
+    kwargs:
+      physical_tag: 2
+    normalization_const: 0.002744
+    coefficient: 0.5
+
+ineq_constraints: []
+
+eq_constraints: []
+
+other_metrics:
+  - function_name: magnetic_energy
+    kwargs:
+      physical_tag: 3
+  - function_name: material_volume
+    kwargs:
+      physical_tag: 2

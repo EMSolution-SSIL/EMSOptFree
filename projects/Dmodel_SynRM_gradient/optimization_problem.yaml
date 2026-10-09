@@ -1,0 +1,24 @@
+case_names:
+  - transient
+
+objectives:
+  - function_name: torque_squared_error
+    kwargs:
+      torque_target: 0.5
+      torque_scale: 4.0
+
+ineq_constraints: []
+
+eq_constraints: []
+
+other_metrics:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0
+  - function_name: torque_ripple
+    kwargs:
+      torque_scale: 4.0
+  - function_name: torque_squared_error
+    kwargs:
+      torque_target: 0.5
+      torque_scale: 4.0

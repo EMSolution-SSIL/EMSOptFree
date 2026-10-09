@@ -1,0 +1,40 @@
+# optimization dependencies
+evaluator:
+  name: pyemsol_shape_evaluator
+optimizer:
+  name: nsga2
+  kwargs:
+    population_size: 20
+    seed: 42
+    bounds: [[40, 45], [1.5, 2.5], [1.0, 2.0], [11, 13], [20, 22],
+             [16, 20], [1.0, 2.0], [0.5, 1.5], [4.0, 6.0], [0.0, 1.0]]
+ems_shape_builder:
+  name: HoleMagnet55
+
+# optimization settings
+num_iteration: 50
+enable_parallelization: True
+num_processes: Null  # if Null, automatically set from cpu counts
+
+# output functionality
+output_interval: 1
+output_control:
+  best_individual:
+    filename_base: best_individual
+    enabled: True
+    output_interval: 1
+  candidate:
+    filename_base: candidate
+    enabled: True
+    output_interval: 1
+  candidate_plot:
+    filename_base: candidate_plot
+    enabled: True
+    output_interval: 10
+enable_progress_gui: True
+response_surface:
+  enabled: True
+  grid_size: 50
+  min_samples: 5
+  n_estimators: 200
+  random_state: 0

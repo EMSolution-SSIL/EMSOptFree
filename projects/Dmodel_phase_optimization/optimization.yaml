@@ -9,6 +9,7 @@ optimizer:
 analysis_conditioner:
   name: phase_conditioner
   kwargs:
+    case_names: ["transient"]
     scale: 10.0
 level_set_function:
   name: ngnet

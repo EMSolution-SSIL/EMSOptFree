@@ -6,7 +6,7 @@ This repository contains the open-source code portion of EMSOptimizer (EMSOptFre
 ## Installation Guide
 *Python 3.11.x environment and pip package manager is required
 
-1. Download the latest version of the EMSOptimizer zip (or tar.gz) file and the accompanying whl file from "Releases" of this repository.
+1. Download the latest version of the EMSOptimizer zip or tar.gz file and the accompanying whl file ("emsopt_engine") from "Releases" of this repository.
 
 2. Unzip the downloaded zip (or tar.gz) file to any location you prefer in your PC.
 

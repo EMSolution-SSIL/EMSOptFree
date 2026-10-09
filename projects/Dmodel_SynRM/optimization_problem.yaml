@@ -1,0 +1,39 @@
+case_names:
+  - transient
+  - structural
+
+objectives:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0
+    normalization_const: 2.1
+    coefficient: -1.0
+
+ineq_constraints:
+  - function_name: von_mises_stress
+    case_name: structural
+    kwargs:
+      prohibit_seperated: True
+    normalization_const: 200e6
+    baseline: 200e6
+
+eq_constraints:
+  - function_name: num_connected_components
+    case_name: transient
+    kwargs:
+      physical_tag: 20
+    baseline: 1
+
+other_metrics:
+  - function_name: average_torque
+    case_name: transient
+    kwargs:
+      torque_scale: 4.0
+  - function_name: von_mises_stress
+    case_name: structural
+    kwargs:
+      prohibit_seperated: True
+  - function_name: num_connected_components
+    case_name: transient
+    kwargs:
+      physical_tag: 20

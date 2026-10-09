@@ -1,7 +1,7 @@
 """
 cmaes.py
 The MIT License (MIT)
-Copyright © 2025 Sicence Solutions International Laboratory, Inc.
+Copyright © 2025 Science Solutions International Laboratory, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
@@ -25,6 +25,13 @@ THE SOFTWARE.
 import numpy as np
 from cmaes import CMA
 
+from core.optimizer.examples.helpers.decomposition import (
+    Scalarizer,
+    generate_scalarizer,
+    initialize_reference_and_nadir,
+    update_reference_and_nadir,
+)
+from core.optimizer.examples.helpers.variation import normalize_mean
 from emsopt_engine.individual import Individual, Population
 from emsopt_engine.interface.optimizer_interface import OptimizerInterface
 from emsopt_engine.interface.so_optimizer_base import SOOptimizerBase
@@ -38,27 +45,32 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
     def __init__(
         self,
         dim: int,
+        num_obj: int = 1,
         mean: np.ndarray | None = None,
         sigma: float = 1.0,
         bounds: tuple[float, float] | list[tuple[float, float]] | None = None,
         seed: int | None = None,
         population_size: int | None = None,
+        scalarizer: Scalarizer | None = None,
+        scalarizer_weights: list[float] | np.ndarray | None = None,
     ) -> None:
         if not isinstance(dim, int) or dim <= 0:
             msg = "dim must be a positive integer"
             raise ValueError(msg)
-        if mean is not None and len(mean) != dim:
-            msg = "mean size must match individual_size"
+        if not isinstance(num_obj, int) or num_obj <= 0:
+            msg = "num_obj must be a positive integer"
             raise ValueError(msg)
+        mean = normalize_mean(mean, dim)
         if bounds is not None:
             if np.asarray(bounds).ndim == 1:
                 bounds = [bounds] * dim
-            elif (np.asarray(bounds).ndim == 2) and (len(bounds) <= dim):
+            elif (np.asarray(bounds).ndim == 2) and (len(bounds) <= dim):  # noqa: PLR2004
                 # fill bounds by (-1, 1)
                 for _ in range(dim - len(bounds)):
                     bounds.append((-1, 1))
             else:
-                raise ValueError("bounds must be a tuple or list of tuples with length equal to or smaller than dim.")
+                msg = "bounds must be a tuple or list of tuples with length equal to or smaller than dim."
+                raise ValueError(msg)
         self.bounds = np.asarray(bounds) if bounds is not None else None
         self._use_transform = self.bounds is not None  # use logistic transform if bounds are given
         # z-space mean: if user gave mean in x-space and bounds exist, map to z via inverse-logit
@@ -73,6 +85,11 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
         self.cma = CMA(mean=z_mean, sigma=sigma, bounds=cma_bounds, seed=seed, population_size=population_size)
         if self.population_size is None:
             self.population_size = self.cma.population_size
+        self.num_obj = num_obj
+        self.scalarizer = scalarizer
+        self.scalarizer_weights = scalarizer_weights
+        self._z_ref: list[float] | None = None
+        self._z_nadir: list[float] | None = None
 
     # --------- logistic transform helpers (per-dimension [a_i, b_i]) ----------
     @staticmethod
@@ -109,6 +126,18 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
 
     # -------------------------------------------------------------------------
 
+    def _initialize_reference_and_nadir(self) -> None:
+        self._z_ref, self._z_nadir = initialize_reference_and_nadir(self.num_obj, self._z_ref, self._z_nadir)
+
+    def _update_reference_and_nadir(self, population: Population) -> None:
+        self._z_ref, self._z_nadir = update_reference_and_nadir(
+            archive=population,
+            num_objectives=self.num_obj,
+            scalarizer=self.scalarizer,
+            reference=self._z_ref,
+            nadir=self._z_nadir,
+        )
+
     def setup_population(self, evaluated_population: Population) -> None:  # noqa: ARG002 ; for interface compatibility
         """Not needed for CMAES"""
         return
@@ -129,7 +158,7 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
             x = self._z_to_x(z)  # mapped to box domain (or identity if no bounds)
             ind = Individual(list(x))
             # keep latent z for tell(); safe to stash as ad-hoc attribute
-            setattr(ind, "_z", z)
+            ind.z = z
             self.population[idx] = ind
         return self.population
 
@@ -139,6 +168,13 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
         Uses latent z (if present) for CMA tell(); evaluation fitness is unchanged.
         """
         self.population = evaluated_candidates
+        if self.scalarizer is not None:
+            if self.scalarizer_weights is None:
+                msg = "scalarizer_weights must be provided when scalarizer is enabled"
+                raise ValueError(msg)
+            self._update_reference_and_nadir(self.population)
+            for ind in self.population.values():
+                ind.metrics.fitness = self.scalarizer(ind.metrics.objectives, self.scalarizer_weights)
         self.update_best_individual()
 
         # collect fitnesses; use latent z if available
@@ -147,7 +183,7 @@ class CMAES(SOOptimizerBase, OptimizerInterface):
         worst_fitness = max(ind.metrics.fitness for ind in self.population.values())
         for ind in self.population.values():
             # latent variable to update CMA in the same space as ask()
-            z = getattr(ind, "_z", np.asarray(ind.solution, dtype=float))
+            z = getattr(ind, "z", np.asarray(ind.solution, dtype=float))
             if ind.metrics.constraint_violation > self.EPS:
                 fit = worst_fitness + ind.metrics.constraint_violation
             else:
@@ -166,6 +202,8 @@ def build_cmaes(
     bounds: tuple[float, float] | list[tuple[float, float]] | None = None,
     seed: int | None = None,
     population_size: int | None = None,
+    scalarizer_type: str | None = None,
+    scalarizer_weights: list[float] | np.ndarray | None = None,
 ) -> OptimizerInterface:
     """
     Wrapper class for the CMA-ES algorithm.
@@ -173,22 +211,33 @@ def build_cmaes(
     Generates populations with get_population and updates distribution parameters with proceed_to_next_iteration.
 
     Args:
-        dim (int): optimization problem dimension (Individual size). When Using pyemsol_shape_evaluator, this will be automatically set by EMSOptimizer.
-        num_obj (int): not used. When Using pyemsol_shape_evaluator, this will be automatically set by EMSOptimizer.
-        mean (np.ndarray, optional): Initial mean vector. Raises error if dimension does not match individual_size.
+        dim (int): optimization problem dimension (Individual size).
+            When Using pyemsol_shape_evaluator, this will be automatically set by EMSOptimizer.
+        num_obj (int): Number of objectives.
+            When Using pyemsol_shape_evaluator, this will be automatically set by EMSOptimizer.
+        mean (np.ndarray, optional): Initial mean vector. Short vectors are padded with zeros.
+            Raises an error if the vector is longer than dim.
         sigma (float, optional): Initial standard deviation. Defaults to 1.0.
         bounds (tuple[float, float] | list[tuple[float, float]], optional): bounds of each variable
         seed (int | None, optional): Random seed for reproducibility.
         population_size (int | None, optional): Population size.
             If None, proper value is set automatically by cmaes library.
+        scalarizer_type (str | None): scalarizer type that scalarize multiple objectives (metrics.objectives).
+            If None, metrics.fitness is directly used as single objective. Defaults to None.
+        scalarizer_weights (list[float] | np.ndarray | None): Weight coefficients used by the scalarizer.
+            Required when scalarizer_type is specified.
     Raises:
-        ValueError: If individual_size is not positive or mean has inconsistent dimension
+        ValueError: If individual_size is not positive or mean is longer than dim
     """
+    scalarizer = generate_scalarizer(scalarizer_type) if scalarizer_type is not None else None
     return CMAES(
         dim=dim,
+        num_obj=num_obj,
         mean=mean,
         sigma=sigma,
         bounds=bounds,
         seed=seed,
         population_size=population_size,
+        scalarizer=scalarizer,
+        scalarizer_weights=scalarizer_weights,
     )

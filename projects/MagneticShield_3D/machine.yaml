@@ -1,0 +1,66 @@
+# analysis dimension
+analysis_dimension: 3D
+
+# design target: "pre_geom" or "rotor"
+design_target: pre_geom
+
+# coordinate system: 'Cartesian' or 'Polar'
+coordinate: Cartesian 
+
+# whether design region includes symmetric region
+has_sym_region: False
+
+# on/off material information
+target_ids_and_onoff:
+  2:
+    - 2
+    - 600000
+
+# physical id (material id) to name map
+physical_id_to_name:
+  1: Coil
+  2: Design
+  3: Target
+  4: Air
+  5: layer
+  6: Coil_top
+  7: Coil_outer
+  8: Coil_bottom
+  9: Coil_inner
+  600000: Hole
+
+# === Implicit Domain Meshing Options ===
+use_implicit_domain_meshing: True
+
+# material boundaries of no_split_ids will be preserved after remeshing
+no_split_ids:
+  - 1
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+
+# mesh of no_remesh_ids will be preserved after remeshing
+no_remesh_ids:
+  - 1
+  - 4
+  - 6
+  - 7
+  - 8
+  - 9
+
+# approximate design region size
+design_region_size: 1.0
+
+# hausd option ratio to design region size
+# stands for maximum Hausdorff distance (approximation error) for level set boundaries
+hausd_ratio: 0.001
+
+# hmin option (minimum size of mesh) ratio to design region size
+hmin_ratio: 0.01
+
+# if mesh quality (>= 0, <= 1) is less than bad_mesh_threshold after remeshing, the individual will be skipped
+bad_mesh_threshold: 0.001

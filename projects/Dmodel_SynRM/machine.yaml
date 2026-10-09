@@ -1,0 +1,84 @@
+# coordinate system: 'Cartesian' or 'Polar'
+coordinate: Polar
+
+# whether design region includes symmetric region
+has_sym_region: True
+
+# axis degree [deg] for symmetric region
+sym_deg: 45.0
+
+# number of rotation (if needed, set > 0)
+num_rotate: 0
+
+# on/off material information
+target_ids_and_onoff:
+  20:
+    - 20
+    - 600000
+
+# physical id (material id) to name map
+physical_id_to_name:
+  20: rotor
+  30: shaft
+  40: airgap
+  50000: magnet_0_0_0
+  600000: hole_0
+
+# when has_sym_region, material map of original to symmetrical (mirrored)
+# [format]
+# {original_id}: {mirrored_id}
+mirror_id_map:
+  20: 20
+  30: 30
+  40: 40
+  50000: 50000
+  600000: 600000
+
+# when num_rotate > 0, increment information of material id
+# [format]
+# {original_id}:
+#   - {first rotated material id}
+#   - {incremental of id per rotate}
+#   - {num of rotate (should be equal to num_rotate)}
+#   - {prefix name}
+increment_info: {}
+
+
+# === Implicit Domain Meshing Options ===
+use_implicit_domain_meshing: False
+
+# material boundaries of no_split_ids will be preserved after remeshing
+no_split_ids:
+  - 30
+  - 40
+  - 50000
+
+# mesh of no_remesh_ids will be preserved after remeshing
+no_remesh_ids:
+  - 40
+
+# approximate design region size
+design_region_size: 0.02
+
+# hausd option ratio to design region size
+# stands for maximum Hausdorff distance (approximation error) for level set boundaries
+hausd_ratio: 0.0001
+
+# hmin option (minimum size of mesh) ratio to design region size
+hmin_ratio: 0.02
+
+# if mesh quality (>= 0, <= 1) is less than bad_mesh_threshold after remeshing, the individual will be skipped
+bad_mesh_threshold: 0.05
+
+# eMachineSim settings
+emsim_disp_bc:
+  axis0:
+    min: null
+    max: null
+  axis1:
+    min:
+      FIX_UY: true
+      FIX_UZ: true
+    max:
+      FIX_UX: true
+      FIX_UZ: true

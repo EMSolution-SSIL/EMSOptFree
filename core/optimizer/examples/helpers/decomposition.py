@@ -1,7 +1,7 @@
 """
 decomposition.py
 The MIT License (MIT)
-Copyright © 2025 Sicence Solutions International Laboratory, Inc.
+Copyright © 2025 Science Solutions International Laboratory, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
@@ -28,8 +28,12 @@ from itertools import combinations_with_replacement
 
 import numpy as np
 
+from emsopt_engine.individual import Population
+
 ArrayLike = Iterable[float]
 EPS = 1e-10
+DEFAULT_MAX_VALUE = 1e9
+DEFAULT_MIN_NADIR_DIFF = 1e-12
 
 
 def to_1d(a: Iterable[float]) -> np.ndarray:
@@ -147,6 +151,54 @@ def neighbor_indices(w: np.ndarray, t: int) -> np.ndarray:
     return np.argsort(d, axis=1)[:, :t]
 
 
+def initialize_reference_and_nadir(
+    num_objectives: int,
+    reference: ArrayLike | None = None,
+    nadir: ArrayLike | None = None,
+) -> tuple[list[float], list[float]]:
+    """Initialize reference and nadir points for decomposition-based optimization."""
+    z_ref = list(reference) if reference is not None else [float("inf")] * num_objectives
+    z_nadir = list(nadir) if nadir is not None else [-float("inf")] * num_objectives
+    return z_ref, z_nadir
+
+
+def update_reference_and_nadir(
+    archive: Population,
+    num_objectives: int,
+    scalarizer: "Scalarizer",
+    reference: ArrayLike | None = None,
+    nadir: ArrayLike | None = None,
+    max_value: float = DEFAULT_MAX_VALUE,
+    min_nadir_diff: float = DEFAULT_MIN_NADIR_DIFF,
+) -> tuple[list[float], list[float]]:
+    """Update reference/nadir points from archive and reflect them to the scalarizer."""
+    z_ref, z_nadir = initialize_reference_and_nadir(num_objectives, reference, nadir)
+
+    cur_min = [float("inf")] * num_objectives
+    cur_max = [-float("inf")] * num_objectives
+    for ind in archive.values():
+        for i, objective in enumerate(ind.metrics.objectives):
+            cur_min[i] = min(cur_min[i], objective)
+            if objective < max_value:
+                cur_max[i] = max(cur_max[i], objective)
+
+    for i in range(num_objectives):
+        if cur_min[i] < z_ref[i] - min_nadir_diff:
+            z_ref[i] = cur_min[i]
+
+    for i in range(num_objectives):
+        if cur_max[i] > z_nadir[i] - min_nadir_diff:
+            z_nadir[i] = cur_max[i]
+
+    for i in range(num_objectives):
+        if z_nadir[i] - z_ref[i] < min_nadir_diff:
+            z_nadir[i] = z_ref[i] + min_nadir_diff
+
+    scalarizer.reference = z_ref
+    scalarizer.nadir = z_nadir
+    return z_ref, z_nadir
+
+
 """
 decomposition strategies
 """
@@ -245,7 +297,7 @@ class PBI(Scalarizer):
           d2 is the perpendicular distance to the λ̂-ray from z*.
     """
 
-    def __init__(self, theta: float = 1.0, **kwargs: dict) -> None:
+    def __init__(self, theta: float = 5.0, **kwargs: dict) -> None:
         super().__init__(**kwargs)
         self.theta = float(theta)
         self.use_normalization = False
@@ -264,3 +316,14 @@ class PBI(Scalarizer):
         proj = z + d1 * lam_hat  # projection point on the ray
         d2 = np.linalg.norm(f - proj)  # perpendicular distance
         return float(d1 + self.theta * d2)
+
+
+def generate_scalarizer(decomposition_type: str) -> Scalarizer:
+    if decomposition_type.lower() == "pbi":
+        return PBI()
+    if decomposition_type.lower() == "weighted_sum":
+        return WeightedSum()
+    if decomposition_type.lower() == "tchebycheff":
+        return Tchebycheff()
+    msg = f"Unknown decomposition_type: {decomposition_type}"
+    raise ValueError(msg)

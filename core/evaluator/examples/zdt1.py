@@ -1,7 +1,7 @@
 """
 zdt1.py
 The MIT License (MIT)
-Copyright © 2025 Sicence Solutions International Laboratory, Inc.
+Copyright © 2025 Science Solutions International Laboratory, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
@@ -49,7 +49,7 @@ class ZDT1(EvaluatorInterface):
             ind.metrics.objectives = [f1, f2]
         return population
 
-    def evaluate_parallel(self, population: Population, num_processes: int | None = None) -> Population:
+    def evaluate_parallel(self, population: Population, num_processes: int | None = None) -> Population:  # noqa: ARG002
         # Simple implementation: just call evaluate (no real parallelism)
         return self.evaluate(population)
 

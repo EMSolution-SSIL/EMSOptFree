@@ -7,7 +7,7 @@ EMSOptimizerは電気機器の設計に特化した数理最適化ライブラ�
 *Python 3.11.x 環境およびパッケージ管理ツールpipが必要です。
 
 1. 本リポジトリの"Releases"から以下の2点をダウンロードします。
-    - EMSOptFree最新バージョンのzipまたはtar.gzファイル
+    - EMSOptFree最新バージョンのzip, tar.gz
     - EMSOptFreeに付随するwhlファイル（emsopt_engine）
 
 2. ダウンロードしたzipまたはtar.gzファイルをPCの任意の場所に展開します。

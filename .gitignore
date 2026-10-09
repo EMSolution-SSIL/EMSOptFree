@@ -1,7 +1,10 @@
 # include temporary files
 __pycache__
+.pytest_tmp*/
+.tmp/*
 projects/*
 /*.png
+stderr
 
 # exclude example projects
 !projects/soo_base
@@ -11,11 +14,26 @@ projects/*
 !projects/Dmodel_moo
 !projects/Dmodel_multi_material
 !projects/Dmodel_phase_optimization
+!projects/Dmodel_SynRM
+!projects/Dmodel_SynRM_gradient
+!projects/Dmodel_SynRM_gradient_ls
+!projects/Dmodel_SynRM_gradient_test
+!projects/Dmodel_mixed_variables
 !projects/IPM8P48S_moo
 !projects/IPM8P48S_pto
+!projects/IPM8P48S_pto_structural
+!projects/IPM8P48S_pto_structural
+!projects/IPM8P48S_surrogate
+!projects/MagneticShield_3D
 !projects/problem_template.yaml
-
 # include folders in project
+optimization_studies
+
+# exclude demo folder
+!projects/Dmodel_demo
+!projects/Dmodel_demo/optimization_studies/
+
+# include resource and result folders
 summary
 Mesh
 resources

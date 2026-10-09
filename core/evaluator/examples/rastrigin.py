@@ -1,7 +1,7 @@
 """
 rastrigin.py
 The MIT License (MIT)
-Copyright © 2025 Sicence Solutions International Laboratory, Inc.
+Copyright © 2025 Science Solutions International Laboratory, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
@@ -34,7 +34,7 @@ class Rastrigin(EvaluatorInterface):
     Rastrigin function class
     """
 
-    def __init__(self, dim: int):
+    def __init__(self, dim: int) -> None:
         self.dim = dim
 
     def evaluate(self, population: Population) -> Population:
@@ -46,12 +46,12 @@ class Rastrigin(EvaluatorInterface):
             ind.metrics.objectives = [fitness]
         return population
 
-    def evaluate_parallel(self, population: Population, num_processes: int | None = None) -> Population:
+    def evaluate_parallel(self, population: Population, num_processes: int | None = None) -> Population:  # noqa: ARG002
         """no parallelization but call self.evaluate"""
         return self.evaluate(population)
 
     @staticmethod
-    def rastrigin(x):
+    def rastrigin(x: list[float]) -> None:
         n = len(x)
         return 10 * n + sum(xi**2 - 10 * math.cos(2 * math.pi * xi) for xi in x)
 

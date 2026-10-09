@@ -1,0 +1,40 @@
+# optimization dependencies
+evaluator:
+  name: pyemsol_shape_evaluator
+optimizer:
+  name: gradient_update
+  kwargs:
+    init_value_filepath: "path/to/EMSOptimizer/projects/Dmodel_SynRM_gradient_ls/optimization_studies/default/resources/dry_run/transient/design_ls_parameters.csv"
+    diffusion_coef: 0.0
+    step_size: 0.0001
+level_set_function:
+  name: pyemsol_density
+  kwargs:
+    proj_method: heaviside5
+    proj_half_width: 0.0005
+    objective_type: W1
+    torque_scale: 4.0
+    coordinate: Polar
+    design_region: [[0.0080, 0.0273], [0.0, 45.0]]
+
+# optimization settings
+num_iteration: 50
+enable_parallelization: False
+num_processes: Null  # if Null, automatically set from cpu counts
+
+# output functionality
+output_interval: 1
+output_control:
+  best_individual:
+    filename_base: best_individual
+    enabled: True
+    output_interval: 1
+  candidate:
+    filename_base: candidate
+    enabled: False
+    output_interval: 1
+  candidate_plot:
+    filename_base: candidate_plot
+    enabled: False
+    output_interval: 10
+enable_progress_gui: True

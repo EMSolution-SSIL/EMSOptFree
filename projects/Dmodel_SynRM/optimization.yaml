@@ -1,0 +1,36 @@
+# optimization dependencies
+evaluator:
+  name: pyemsol_shape_evaluator
+optimizer:
+  name: cmaes
+  kwargs:
+    population_size: 16
+level_set_function:
+  name: ngnet_mixture
+  kwargs:
+    boundary_r: 0.0273
+    sigma: 0.0010
+    design_region: [[0.008, 0.0273], [0, 45.0]]
+    coordinate: Polar
+
+# optimization settings
+num_iteration: 200
+enable_parallelization: True
+num_processes: Null  # if Null, automatically set from cpu counts
+
+# output functionality
+output_interval: 1
+output_control:
+  best_individual:
+    filename_base: best_individual
+    enabled: True
+    output_interval: 1
+  candidate:
+    filename_base: candidate
+    enabled: False
+    output_interval: 1
+  candidate_plot:
+    filename_base: candidate_plot
+    enabled: True
+    output_interval: 10
+enable_progress_gui: True

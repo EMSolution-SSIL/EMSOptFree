@@ -14,7 +14,7 @@ level_set_function:
 
 # optimization settings
 num_iteration: 100
-enable_parallelization: False
+enable_parallelization: True
 num_processes: Null  # if Null, automatically set from cpu counts
 
 # output functionality

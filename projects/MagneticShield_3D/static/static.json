@@ -1,0 +1,246 @@
+{
+  "metaData": {
+    "type": "EMSolution_Input",
+    "version": "1.0",
+    "releaseDate": "May 8, 2024",
+    "creationDate": "2025-07-29 13:41:03",
+    "comments": "static"
+  },
+  "0_Release_Number": {
+    "RLS_NO": "r10.2"
+  },
+  "1_Execution_Control": {
+    "PRE_PROCESSING": 1,
+    "MAKE_SYSTEM_MATRICES": 1,
+    "SOLVE_EQUATION": 1,
+    "POST_PROCESSING": 1
+  },
+  "2_Analysis_Type": {
+    "STATIC": 1,
+    "AC": 0,
+    "TRANSIENT": 0,
+    "MOTION": 0,
+    "NON_LINEAR": 0,
+    "TEMP_DEPEND": 0,
+    "STEADY_CURRENT": 0
+  },
+  "3_Potential_Gauge_Conditions": {
+    "POTENTIAL": 0
+  },
+  "8_Calculation_Step": {
+    "NO_DATA": 1,
+    "NO_STEPS": [
+      1
+    ],
+    "DELTA_TIME": [
+      0.1
+    ],
+    "INITIAL_TIME": 0.0,
+    "CYCLE": 0
+  },
+  "9_Output_Step": {
+    "TIME_DIFF": 3,
+    "RESTART_FILE_OPTION": 0,
+    "ALL_STEP_OUTPUT": 1,
+    "OUTPUT_STEP_SET": [
+      [
+        1,
+        1,
+        1
+      ]
+    ]
+  },
+  "10_1_Input_Files": {
+    "INPUT_MESH_FILE": 11,
+    "UNIT": 0,
+    "NO_MESH": 0,
+    "MESHLESS": 0
+  },
+  "10_2_Output_Files": {
+    "POST_DATA_FILE": 5,
+    "ELEM_OUT": 1,
+    "NODE_OUT": 1
+  },
+  "10_3_Post_Files": {
+    "MESH": 1,
+    "CURRENT": 1,
+    "MAGNETIC": 1
+  },
+  "11_Print_Output": {
+    "MAGNETIC_ENERGY": 1
+  },
+  "12_Geometry": {
+    "GEOMETRY": 0
+  },
+  "13_Boundary_Conditions": {
+    "FAR_BOUNDARY_CONDITION": 0,
+    "PHI_BOUNDARY_CONDITION": 0,
+    "DISTANCE_JUDGE": 1.0e-6,
+    "DIRICHLET_PLANE": {
+      "CXYZ": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0
+        ]
+      ]
+    }
+  },
+  "16_Material_Properties": {
+    "16_1_3D_Element_Properties": [
+      {
+        "MAT_ID": 1,
+        "MAT_NAME": "coil",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 1.0
+        }
+      },
+      {
+        "MAT_ID": 2,
+        "MAT_NAME": "design",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 200.0
+        }
+      },
+      {
+        "MAT_ID": 3,
+        "MAT_NAME": "target",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 1.0
+        }
+      },
+      {
+        "MAT_ID": 4,
+        "MAT_NAME": "surrounding",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 1.0
+        }
+      },
+      {
+        "MAT_ID": 5,
+        "MAT_NAME": "layer",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 1.0
+        }
+      },
+      {
+        "MAT_ID": 600000,
+        "MAT_NAME": "hole",
+        "POTENTIAL": 0,
+        "ElectricProperty": {
+          "conductivity": {
+            "SIGMA": 0.0
+          }
+        },
+        "MagneticProperty": {
+          "MU": 1.0
+        }
+      }
+    ]
+  },
+  "17_Field_Source": [
+    {
+      "SDEFCOIL": {
+        "SERIES_ID": 1,
+        "IN_ROTOR": 0,
+        "data": [
+          {
+            "MAT_ID": 1,
+            "SMAT_IDS": [
+              6,
+              7,
+              8,
+              9
+            ],
+            "CURRENT": 1.0,
+            "SIGMA": 58000000.0,
+            "CAL_Je": 0
+          }
+        ]
+      }
+    },
+    {
+      "CIRCUIT": {
+        "REGION_FACTOR": 1.0,
+        "REGION_PARALLEL": 1,
+        "SERIES_IDS": [
+          1
+        ],
+        "INDUCTANCE_MATRIX": {
+          "IN_IND": 2
+        },
+        "RESISTANCE_MATRIX": {
+          "IN_RES": 1,
+          "MATRIX": [
+            1.0e-6
+          ]
+        },
+        "CONNECTION_MATRIX": {
+          "IN_CON": 1
+        },
+        "POWER_SUPPLIES": [
+          {
+            "PS_ID": 1,
+            "TYPE": 0,
+            "TIME_ID": 1,
+            "INITIAL_CURRENT": 0.0
+          }
+        ]
+      }
+    }
+  ],
+  "18_Time_Function": [
+    {
+      "TIME_ID": 1,
+      "OPTION": 1,
+      "CYCLE": 0.0,
+      "TIME": [
+        0.0,
+        0.1
+      ],
+      "VALUE": [
+        100.0,
+        100.0
+      ]
+    }
+  ]
+}

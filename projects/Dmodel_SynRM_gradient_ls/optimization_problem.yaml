@@ -1,0 +1,17 @@
+case_names:
+  - transient
+
+objectives:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0
+    coefficient: -1.0
+
+ineq_constraints: []
+
+eq_constraints: []
+
+other_metrics:
+  - function_name: average_torque
+    kwargs:
+      torque_scale: 4.0

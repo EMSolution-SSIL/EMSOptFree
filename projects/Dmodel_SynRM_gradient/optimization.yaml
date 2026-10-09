@@ -1,0 +1,39 @@
+# optimization dependencies
+evaluator:
+  name: pyemsol_shape_evaluator
+optimizer:
+  name: gradient_update
+  kwargs:
+    constraint_mode: volume_penalty
+    volume_frac_ulim: 0.5
+level_set_function:
+  name: pyemsol_density
+  kwargs:
+    proj_method: heaviside5
+    objective_type: W2
+    torque_scale: 4.0
+    torque_target: 0.5
+    coordinate: Polar
+    design_region: [[0.0100, 0.0273], [5.0, 45.0]]
+
+# optimization settings
+num_iteration: 200
+enable_parallelization: False
+num_processes: Null  # if Null, automatically set from cpu counts
+
+# output functionality
+output_interval: 1
+output_control:
+  best_individual:
+    filename_base: best_individual
+    enabled: True
+    output_interval: 1
+  candidate:
+    filename_base: candidate
+    enabled: False
+    output_interval: 1
+  candidate_plot:
+    filename_base: candidate_plot
+    enabled: False
+    output_interval: 10
+enable_progress_gui: True

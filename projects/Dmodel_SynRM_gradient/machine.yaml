@@ -1,0 +1,54 @@
+# coordinate system: 'Cartesian' or 'Polar'
+coordinate: Polar
+
+# whether design region includes symmetric region
+has_sym_region: True
+
+# axis degree [deg] for symmetric region
+sym_deg: 45.0
+
+# number of rotation (if needed, set > 0)
+num_rotate: 0
+
+# on/off material information
+target_ids_and_onoff:
+  20:
+    - 20
+    - 600000
+  600000:
+    - 20
+    - 600000
+
+# physical id (material id) to name map
+physical_id_to_name:
+  20: rotor
+  30: shaft
+  40: airgap
+  50000: magnet_0_0_0
+  600000: hole_0
+
+# when has_sym_region, material map of original to symmetrical (mirrored)
+# [format]
+# {original_id}: {mirrored_id}
+mirror_id_map:
+  20: 20
+  30: 30
+  40: 40
+  50000: 50000
+  600000: 600000
+
+# when num_rotate > 0, increment information of material id
+# [format]
+# {original_id}:
+#   - {first rotated material id}
+#   - {incremental of id per rotate}
+#   - {num of rotate (should be equal to num_rotate)}
+#   - {prefix name}
+increment_info: {}
+
+# === Implicit Domain Meshing Options ===
+use_implicit_domain_meshing: False
+
+# neighbor judgement
+neighbor_radius_ratio: 2.0
+min_neighbors: 1
